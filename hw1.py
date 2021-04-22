@@ -2,34 +2,36 @@ from abc import abstractmethod, ABC
 import json
 import pickle
 
-
+# 1
 some_data = {'key': 'value', 2: [1, 2, 3], 'tuple': (5, 6), 'a': {'key': 'value'}}
 
-class MyBaseClass(ABC):
+class SerializationInterface(ABC):
     @abstractmethod
-    def serialize(self):
+    def serialization(self):
         pass
         
 
-class SerializeJson(MyBaseClass):
-    def serialize(self, data, path):
+class SerializationJson(SerializationInterface):
+    def serialization(self, data, path):
         with open(path, 'w') as file:
             json.dump(data, file)
 
 
 
-class SerializeBin(MyBaseClass):
-    def serialize(self, data, path):
+class SerializationBin(SerializationInterface):
+    def serialization(self, data, path):
         with open(path, 'wb') as file:
             pickle.dump(data, file)
 
 
-to_json = SerializeJson()
-to_json.serialize(some_data, 'test.json')
+to_json = SerializationJson()
+to_json.serialization(some_data, 'test.json')
 
-to_bin = SerializeBin()
-to_bin.serialize(some_data, 'test.bin')
+to_bin = SerializationBin()
+to_bin.serialization(some_data, 'test.bin')
 
+
+# 2
 
 class Meta(type):
 
