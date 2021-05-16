@@ -1,11 +1,11 @@
+import concurrent.futures
+from pathlib import Path
 import os
 import sys
 import shutil
-from pathlib import Path
 from uuid import uuid4
 
 
-# Какая-то проблемма с импортом модуля, поэтому завернул в try/except
 try:
     from helpers import *
 except ModuleNotFoundError:
@@ -34,9 +34,15 @@ def get_files_list(path=Path(path_dir)):
 
     
     # Перевод всех файлов на латиницу
-    for file in path.iterdir():
-        rename_files(file)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(rename_files, [file for file in path.iterdir() if file.is_file()])
 
+    # for file in path.iterdir():
+    #     rename_files(file)
+
+
+
+# Вынести всю логику в функцию remove_files()
     for file in path.iterdir():
         if file.is_file():
 
@@ -60,39 +66,44 @@ def get_files_list(path=Path(path_dir)):
             
             
             elif ext_lower in (zip_data_filter):
+                zip_data.append(file.name)
                 unpack_archive_files(file, path_dir, zip_data)
             
 
-            # Как я понял из условия задания, неизвестные файлы мы не трогаем... 
-            # else:
-            #     unknown_files.append(file.name)
-            #     remove_files('unknown_files', file, path_dir)
+            else:
+                unknown_files.append(file.name)
+                remove_files('Unknown_files', file, path_dir)
 
                 
-        elif file.is_dir() and file.name in ignore_dir:
-            continue
+    #     elif file.is_dir() and file.name in ignore_dir:
+    #         continue
 
-        else:
-            # Создаем новый путь
-            path_for_recursion = Path(f'{file.parent}\{file.name}')
+    #     else:
+    #         # Создаем новый путь
+    #         path_for_recursion = Path(f'{file.parent}\{file.name}')
 
-            # Рекурсия
-            get_files_list(path_for_recursion)
+    #         # Рекурсия
+    #         get_files_list(path_for_recursion)
 
-            # Удаление пустых директорий
-            try:
-                Path.rmdir(file)
-            except OSError:
-                continue
+    #         # Удаление пустых директорий
+    #         try:
+    #             Path.rmdir(file)
+    #         except OSError:
+    #             continue
 
 get_files_list(path)
 
 
 
 
-if photo or video or docs or music or zip_data:
-    create_table_string_format('photo', photo)
-    create_table_string_format('video', video)
-    create_table_string_format('docs', docs)
-    create_table_string_format('music', music)
-    create_table_string_format('zip_data', zip_data)
+
+
+
+
+
+# if photo or video or docs or music or zip_data:
+#     create_table_string_format('photo', photo)
+#     create_table_string_format('video', video)
+#     create_table_string_format('docs', docs)
+#     create_table_string_format('music', music)
+#     create_table_string_format('zip_data', zip_data)
