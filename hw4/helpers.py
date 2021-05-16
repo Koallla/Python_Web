@@ -42,7 +42,7 @@ def rename_files (file):
         p.rename(full_path_new_file)
     except FileExistsError: 
         message_file_exists(file.name)
-        file_name_with_ext = '{}_id{}{}'.format(file_name_translated, uuid4(), ext)
+        file_name_with_ext = '{}_id_{}{}'.format(file_name_translated, uuid4(), ext)
         full_path_new_file = '{}\{}'.format(parent_dir, file_name_with_ext)
         p.rename(full_path_new_file)
 
@@ -59,18 +59,16 @@ def remove_files (name_new_dir, file, path_dir):
 
     # Путь для новой директории
     path_new_dir = '{}\\{}'.format(path_dir, name_new_dir)
-    p = Path(path_new_dir)
 
     # Создаем новую директорию и перемещаем в нее файл
     if os.path.exists(path_new_dir):
         try:
             shutil.move(file, path_new_dir)
         except:
-            p = Path(file)
-            file_name = f"{file.stem}--{uuid4()}{file.suffix}"
-            parent_dir = p.parent
-            full_path_to_file = f'{parent_dir}{file_name}'
-            new_path_rename_file = p.rename(full_path_to_file)
+            file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
+            parent_dir = file.parent
+            full_path_to_file = f'{file_name}'
+            new_path_rename_file = file.rename(full_path_to_file)
             shutil.move(new_path_rename_file, path_new_dir)
 
     else:
@@ -83,7 +81,7 @@ def remove_files (name_new_dir, file, path_dir):
 def unpack_archive_files(file, path_dir, zip_data):
     zip_data.append(file.name)
     # Создаем путь к директории для распаковки архивов
-    path_for_dir_archives = '{}\\{}'.format(path_dir, 'archives')
+    path_for_dir_archives = '{}\\{}'.format(path_dir, 'Archives')
 
     # Создаем путь к поддиректории для распаковки одного архива
     path_for_dir_unpack = '{}\\{}'.format(path_for_dir_archives, file.name.removesuffix(file.suffix[:]))
