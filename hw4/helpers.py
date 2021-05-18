@@ -4,13 +4,35 @@ import shutil
 from pathlib import Path
 from uuid import uuid4
 
-
+from prettytable import PrettyTable
 
 
 try:
     from translator import normalize
 except ModuleNotFoundError:
     from .translator import normalize
+
+
+def get_path():
+    path_dir = None
+    try:
+        path_dir = sys.argv[1]
+    except IndexError:
+        path_dir = input('Enter path to directory: ')
+
+    path_dir = Path(path_dir)
+    return path_dir
+
+root_path_dir = get_path()
+
+
+# Списки для имен файлов
+photo = []
+video = []
+docs = []
+music = []
+zip_data = []
+unknown_files = []
 
 
 
@@ -52,13 +74,11 @@ def message_file_exists(file_name):
     print(f'Файл {file_name} уже существует')
 
 
-
-
 # Создание папки и перемещение в нее файлов определенного типа
-def remove_files (name_new_dir, file, path_dir):
+def remove_files(name_new_dir, file):
 
     # Путь для новой директории
-    path_new_dir = '{}\\{}'.format(path_dir, name_new_dir)
+    path_new_dir = '{}\\{}'.format(root_path_dir, name_new_dir)
 
     # Создаем новую директорию и перемещаем в нее файл
     if os.path.exists(path_new_dir):
@@ -70,18 +90,16 @@ def remove_files (name_new_dir, file, path_dir):
             full_path_to_file = f'{file_name}'
             new_path_rename_file = file.rename(full_path_to_file)
             shutil.move(new_path_rename_file, path_new_dir)
-
     else:
         os.mkdir(path_new_dir)
         shutil.move(file, path_new_dir)
 
 
-
 # Создание папки, подпаки и распаковка архива 
-def unpack_archive_files(file, path_dir, zip_data):
-    zip_data.append(file.name)
+def unpack_archive_files(file, zip_data):
+
     # Создаем путь к директории для распаковки архивов
-    path_for_dir_archives = '{}\\{}'.format(path_dir, 'Archives')
+    path_for_dir_archives = '{}\\{}'.format(root_path_dir, 'Archives')
 
     # Создаем путь к поддиректории для распаковки одного архива
     path_for_dir_unpack = '{}\\{}'.format(path_for_dir_archives, file.name.removesuffix(file.suffix[:]))
@@ -104,25 +122,58 @@ def unpack_archive_files(file, path_dir, zip_data):
         os.remove(file)
 
 
+# Сортировка файлов по спискам и вызов функции перемещения файлов
+def moving_files(file):
+    ext_lower = file.suffix[1:].lower()
+
+    if ext_lower in (photo_filter):
+        photo.append(file.name)
+        remove_files('Images', file)
+        
+    elif ext_lower in (video_filter):
+        video.append(file.name)
+        remove_files('Video', file)
+
+    elif ext_lower in (docs_filter):
+        docs.append(file.name)
+        remove_files('Documents', file)
+
+    elif ext_lower in (music_filter):
+        music.append(file.name)
+        remove_files('Audio', file)
+    
+    elif ext_lower in (zip_data_filter):
+            zip_data.append(file.name)
+            unpack_archive_files(file, zip_data)
+        
+    else:
+        unknown_files.append(file.name)
+        remove_files('Unknown_files', file)
 
 
-def create_table_string_format(extention, files_list):
+def create_table(extention, files_list):
     ''' This funcrion create table for files_list '''
+    x = PrettyTable()
+    title = ["ID", "File type", "File name",  "File extention"]
+    x.field_names = title
+    if files_list:
+        rows = []
+        for idx, file in enumerate(files_list):
+            file = Path(file)
+            rows.append([idx + 1, extention, file.stem, file.suffix[1:].lower()])
 
-    width = 20
-    width_file_list = 60
+        x.add_rows(rows)
+        print(x)
+    else:
+        x.add_row([0, '-', '-', '-'])
+        print(x)
 
-    string_files = ''
-    for file in files_list:
-        string_files += '| {:^{width}} | {:^{width}} | {:^{width_file_list}} | \n'.format(' ', ' ', file, width=width, width_file_list=width_file_list)
 
 
-    title = '| {:^{width}} | {:^{width}} | {:^{width_file_list}} |'.format('Files names', 'Counts', 'Files list',  width=width, width_file_list=width_file_list)
-    line = '=' * len(title)
-    header = line + '\n' + title + '\n' + line + '\n'
-
-    files_name_and_count = '| {:^{width}} | {:^{width}} | {:_^{width_file_list}} | \n'.format(extention, len(files_list), '', width=width, width_file_list=width_file_list)
-
-    end = '{:=^{width}}'.format('END', width=len(title))
-
-    print(header + files_name_and_count + string_files + end)
+def show_result():
+    create_table('Photo', photo)
+    create_table('Video', video)
+    create_table('Docs', docs)
+    create_table('Music', music)
+    create_table('Zip_data', zip_data)
+    create_table('Unknow_files', unknown_files)
