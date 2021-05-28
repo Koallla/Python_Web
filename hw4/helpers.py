@@ -27,12 +27,14 @@ root_path_dir = get_path()
 
 
 # Списки для имен файлов
-photo = []
-video = []
-docs = []
-music = []
-zip_data = []
-unknown_files = []
+files_dict = {
+'Images': [],
+'Video': [],
+'Documents': [],
+'Music': [],
+'Zip_data': [],
+'Unknown_files': []}
+
 
 
 
@@ -87,8 +89,9 @@ def remove_files(name_new_dir, file):
         except:
             file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
             parent_dir = file.parent
-            full_path_to_file = f'{file_name}'
+            full_path_to_file = f'{parent_dir}\{file_name}'
             new_path_rename_file = file.rename(full_path_to_file)
+            files_dict[name_new_dir].append(file_name)
             shutil.move(new_path_rename_file, path_new_dir)
     else:
         os.mkdir(path_new_dir)
@@ -127,27 +130,27 @@ def moving_files(file):
     ext_lower = file.suffix[1:].lower()
 
     if ext_lower in (photo_filter):
-        photo.append(file.name)
+        files_dict['Images'].append(file.name)
         remove_files('Images', file)
         
     elif ext_lower in (video_filter):
-        video.append(file.name)
+        files_dict['Video'].append(file.name)
         remove_files('Video', file)
 
     elif ext_lower in (docs_filter):
-        docs.append(file.name)
+        files_dict['Documents'].append(file.name)
         remove_files('Documents', file)
 
     elif ext_lower in (music_filter):
-        music.append(file.name)
-        remove_files('Audio', file)
+        files_dict['Music'].append(file.name)
+        remove_files('Music', file)
     
     elif ext_lower in (zip_data_filter):
-            zip_data.append(file.name)
-            unpack_archive_files(file, zip_data)
+            files_dict['Zip_data'].append(file.name)
+            unpack_archive_files(file, files_dict.zip_data)
         
     else:
-        unknown_files.append(file.name)
+        files_dict['Unknown_files'].append(file.name)
         remove_files('Unknown_files', file)
 
 
@@ -171,9 +174,9 @@ def create_table(extention, files_list):
 
 
 def show_result():
-    create_table('Photo', photo)
-    create_table('Video', video)
-    create_table('Docs', docs)
-    create_table('Music', music)
-    create_table('Zip_data', zip_data)
-    create_table('Unknow_files', unknown_files)
+    create_table('Images', files_dict['Images'])
+    create_table('Video', files_dict['Video'])
+    create_table('Documents', files_dict['Documents'])
+    create_table('Music', files_dict['Music'])
+    create_table('Zip_data', files_dict['Zip_data'])
+    create_table('Unknown_files', files_dict['Unknown_files']) 
