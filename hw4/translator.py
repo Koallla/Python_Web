@@ -82,3 +82,4 @@ def normalize(string):
 	string_without_symbols = re.sub(WITHOUT_SYMBOL_REGEX, '_', translated)
 
 	return string_without_symbols
+
