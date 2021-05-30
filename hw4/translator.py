@@ -70,7 +70,7 @@ ord('я'): 'ya',
 ord('Я'): 'Ya',
 }
 
-def normalize(string):
+async def normalize(string):
 	'''
 	This function converts kirilica to latinica
 	'''

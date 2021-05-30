@@ -1,3 +1,5 @@
+from aiopath import AsyncPath
+import asyncio
 import os
 import sys
 import shutil
@@ -12,6 +14,9 @@ try:
 except ModuleNotFoundError:
     from .translator import normalize
 
+# TODO
+# Пофиксить NoneType 
+
 
 def get_path():
     path_dir = None
@@ -19,10 +24,12 @@ def get_path():
         path_dir = sys.argv[1]
     except IndexError:
         path_dir = input('Enter path to directory: ')
-
-    path_dir = Path(path_dir)
-    return path_dir
-
+    if Path(path_dir).exists():
+        path_dir = Path(path_dir)
+        return path_dir
+    else:
+        print('You entered wrong path! Please, try again!')
+        get_path()
 root_path_dir = get_path()
 
 
@@ -52,28 +59,45 @@ ignore_dir = ('Images', 'Video', 'Audio', 'Documents', 'Archives', 'Unknown_file
 def extensions(file, container):
     container.add(file.suffix[1:].lower())
 
+# Сообщение: Файл существует!
+def message_file_exists(file_name):
+    print(f'Файл {file_name} уже существует')
+
 
 # Перевод имени файлов и их переименование (для цикла path.iterdir())
-def rename_files (file):
+async def rename_files(file):
     ext = file.suffix
     file_name_without_ext = file.name.removesuffix(ext)
-    file_name_translated = normalize(file_name_without_ext)
+    file_name_translated = await normalize(file_name_without_ext)
     file_name_with_ext = '{}{}'.format(file_name_translated, ext)
-    p = Path(file)
+    p = AsyncPath(file)
     parent_dir = p.parent
     full_path_new_file = '{}\{}'.format(parent_dir, file_name_with_ext)
     try:
-        p.rename(full_path_new_file)
+        await p.rename(full_path_new_file)
     except FileExistsError: 
         message_file_exists(file.name)
         file_name_with_ext = '{}_id_{}{}'.format(file_name_translated, uuid4(), ext)
         full_path_new_file = '{}\{}'.format(parent_dir, file_name_with_ext)
-        p.rename(full_path_new_file)
+        await p.rename(full_path_new_file)
 
 
-# Сообщение: Файл существует!
-def message_file_exists(file_name):
-    print(f'Файл {file_name} уже существует')
+
+# async def rename_files(file):
+#     ext = file.suffix
+#     file_name_without_ext = file.name.removesuffix(ext)
+#     file_name_with_ext = '{}_id_{}{}'.format('абвгдеёж', uuid4(), ext)
+#     p = AsyncPath(file)
+#     parent_dir = p.parent
+#     full_path_new_file = '{}\{}'.format(parent_dir, file_name_with_ext)
+#     try:
+#         await p.rename(full_path_new_file)
+#     except FileExistsError: 
+#         message_file_exists(file.name)
+#         file_name_with_ext = '{}_id_{}{}'.format(file_name_translated, uuid4(), ext)
+#         full_path_new_file = '{}\{}'.format(parent_dir, file_name_with_ext)
+#         await p.rename(full_path_new_file)
+
 
 
 # Создание папки и перемещение в нее файлов определенного типа
@@ -99,7 +123,7 @@ def remove_files(name_new_dir, file):
 
 
 # Создание папки, подпаки и распаковка архива 
-def unpack_archive_files(file, zip_data):
+def unpack_archive_files(file):
 
     # Создаем путь к директории для распаковки архивов
     path_for_dir_archives = '{}\\{}'.format(root_path_dir, 'Archives')
@@ -147,7 +171,7 @@ def moving_files(file):
     
     elif ext_lower in (zip_data_filter):
             files_dict['Zip_data'].append(file.name)
-            unpack_archive_files(file, files_dict.zip_data)
+            unpack_archive_files(file)
         
     else:
         files_dict['Unknown_files'].append(file.name)
@@ -180,3 +204,5 @@ def show_result():
     create_table('Music', files_dict['Music'])
     create_table('Zip_data', files_dict['Zip_data'])
     create_table('Unknown_files', files_dict['Unknown_files']) 
+
+
