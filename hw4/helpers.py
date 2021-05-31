@@ -19,17 +19,18 @@ except ModuleNotFoundError:
 
 
 def get_path():
-    path_dir = None
-    try:
-        path_dir = sys.argv[1]
-    except IndexError:
-        path_dir = input('Enter path to directory: ')
-    if Path(path_dir).exists():
-        path_dir = Path(path_dir)
-        return path_dir
-    else:
-        print('You entered wrong path! Please, try again!')
-        get_path()
+    while True:
+        path_dir = None
+        try:
+            path_dir = sys.argv[1]
+        except IndexError:
+            path_dir = input('Enter path to directory: ')
+        if Path(path_dir).exists():
+            path_dir = Path(path_dir)
+            return path_dir
+        else:
+            print('You entered wrong path! Please, try again!')
+
 root_path_dir = get_path()
 
 
