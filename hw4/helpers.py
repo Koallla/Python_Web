@@ -14,9 +14,6 @@ try:
 except ModuleNotFoundError:
     from .translator import normalize
 
-# TODO
-# Пофиксить NoneType 
-
 
 def get_path():
     while True:
@@ -102,29 +99,38 @@ async def rename_files(file):
 
 
 # Создание папки и перемещение в нее файлов определенного типа
-def remove_files(name_new_dir, file):
-
+async def remove_files(name_new_dir, file):
     # Путь для новой директории
     path_new_dir = '{}\\{}'.format(root_path_dir, name_new_dir)
-
+    afile = AsyncPath(file)
+    apath_new_dir = AsyncPath(path_new_dir)
+    target = path_new_dir + '\\' + file.name
+    
     # Создаем новую директорию и перемещаем в нее файл
+    
     if os.path.exists(path_new_dir):
         try:
-            shutil.move(file, path_new_dir)
-        except:
-            file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
-            parent_dir = file.parent
-            full_path_to_file = f'{parent_dir}\{file_name}'
-            new_path_rename_file = file.rename(full_path_to_file)
-            files_dict[name_new_dir].append(file_name)
-            shutil.move(new_path_rename_file, path_new_dir)
-    else:
-        os.mkdir(path_new_dir)
-        shutil.move(file, path_new_dir)
+            await afile.rename(target)
+            # shutil.move(file, path_new_dir)
+        except Exception as e:
+            print(e)
+            # file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
+            # parent_dir = file.parent
+            # full_path_to_file = f'{parent_dir}\{file_name}'
+            # new_path_rename_file = file.rename(full_path_to_file)
+            # files_dict[name_new_dir].append(file_name)
+            # shutil.move(new_path_rename_file, path_new_dir)
+    # else:
+    #     os.mkdir(path_new_dir)
+    #     await afile.rename(target)
+
+
+
+        # shutil.move(file, path_new_dir)
 
 
 # Создание папки, подпаки и распаковка архива 
-def unpack_archive_files(file):
+async def unpack_archive_files(file):
 
     # Создаем путь к директории для распаковки архивов
     path_for_dir_archives = '{}\\{}'.format(root_path_dir, 'Archives')
@@ -151,32 +157,32 @@ def unpack_archive_files(file):
 
 
 # Сортировка файлов по спискам и вызов функции перемещения файлов
-def moving_files(file):
+async def moving_files(file):
     ext_lower = file.suffix[1:].lower()
 
     if ext_lower in (photo_filter):
         files_dict['Images'].append(file.name)
-        remove_files('Images', file)
+        await remove_files('Images', file)
         
     elif ext_lower in (video_filter):
         files_dict['Video'].append(file.name)
-        remove_files('Video', file)
+        await remove_files('Video', file)
 
     elif ext_lower in (docs_filter):
         files_dict['Documents'].append(file.name)
-        remove_files('Documents', file)
+        await remove_files('Documents', file)
 
     elif ext_lower in (music_filter):
         files_dict['Music'].append(file.name)
-        remove_files('Music', file)
+        await remove_files('Music', file)
     
     elif ext_lower in (zip_data_filter):
             files_dict['Zip_data'].append(file.name)
-            unpack_archive_files(file)
+            await unpack_archive_files(file)
         
     else:
         files_dict['Unknown_files'].append(file.name)
-        remove_files('Unknown_files', file)
+        await remove_files('Unknown_files', file)
 
 
 def create_table(extention, files_list):
@@ -205,5 +211,4 @@ def show_result():
     create_table('Music', files_dict['Music'])
     create_table('Zip_data', files_dict['Zip_data'])
     create_table('Unknown_files', files_dict['Unknown_files']) 
-
 
