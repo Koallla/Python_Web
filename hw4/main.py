@@ -58,9 +58,11 @@ path = root_path_dir
 async def main(path):
     start_time = time()
 
-    futures = [rename_files(file) for file in path.iterdir()]
-    await asyncio.gather(*futures)
+    # futures = [rename_files(file) for file in path.iterdir()]
+    # asyncio.gather(*futures)
 
+    futures = [moving_files(file) for file in path.iterdir() if file.is_file()]
+    await asyncio.gather(*futures)
     print(time() - start_time)
 
 asyncio.run(main(path))
