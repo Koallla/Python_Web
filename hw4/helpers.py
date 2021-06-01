@@ -28,7 +28,8 @@ def get_path():
         else:
             print('You entered wrong path! Please, try again!')
 
-root_path_dir = get_path()
+# root_path_dir = get_path()
+root_path_dir = Path('E:\Загрузки')
 
 
 # Списки для имен файлов
@@ -107,22 +108,22 @@ async def remove_files(name_new_dir, file):
     target = path_new_dir + '\\' + file.name
     
     # Создаем новую директорию и перемещаем в нее файл
-    
     if os.path.exists(path_new_dir):
         try:
             await afile.rename(target)
             # shutil.move(file, path_new_dir)
-        except Exception as e:
-            print(e)
-            # file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
-            # parent_dir = file.parent
-            # full_path_to_file = f'{parent_dir}\{file_name}'
-            # new_path_rename_file = file.rename(full_path_to_file)
-            # files_dict[name_new_dir].append(file_name)
+        except:
+            file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
+            files_dict[name_new_dir].append(file_name)
+            parent_dir = file.parent
+            full_path_to_file = f'{parent_dir}\{file_name}'
+            new_path_rename_file = await afile.rename(full_path_to_file)
+            target = path_new_dir + '\\' + file_name
+            await new_path_rename_file.rename(target)
             # shutil.move(new_path_rename_file, path_new_dir)
-    # else:
-    #     os.mkdir(path_new_dir)
-    #     await afile.rename(target)
+    else:
+        await AsyncPath.mkdir(apath_new_dir, exist_ok = True)
+        await afile.rename(target)
 
 
 
