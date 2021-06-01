@@ -153,22 +153,15 @@ async def unpack_archive_files(name_new_dir, file):
         except (FileExistsError, shutil.Error):
             # shutil.unpack_archive(file, path_for_dir_unpack)
             message_file_exists(file.name)
-            # choice = input('Rename? yes/no: ')
-            # if choice == 'yes':
-            file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
-            files_dict[name_new_dir].append(file_name)
-            parent_dir = file.parent
-            full_path_to_file = f'{parent_dir}\{file_name}'
-            new_path_rename_file = await afile.rename(full_path_to_file)
-            target = path_for_dir_unpack + '\\' + file_name
-            await new_path_rename_file.rename(target)
+            choice = input('Rename dir for unpack? yes/no: ')
+            if choice == 'yes':
+                file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
+                files_dict[name_new_dir].append(file.name)
+                target = AsyncPath(f"{apath_for_dir_unpack}_id_{uuid4()}")
+                await AsyncPath.mkdir(target)
+                shutil.unpack_archive(file, target)
+                await AsyncPath.unlink(afile)
 
-# TODO
-# Пофиксить распаковку с созданием uuid
-
-                # file = await AsyncPath.replace(afile, 'new_name')
-                # print(file)
-                # print(file.name)
 
     else:
         await AsyncPath.mkdir(apath_for_dir_archives)
