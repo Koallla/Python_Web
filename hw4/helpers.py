@@ -108,7 +108,9 @@ async def remove_files(name_new_dir, file):
     target = path_new_dir + '\\' + file.name
     
     # Создаем новую директорию и перемещаем в нее файл
-    if os.path.exists(path_new_dir):
+    is_path_exists = await AsyncPath.exists(apath_new_dir)
+
+    if is_path_exists:
         try:
             await afile.rename(target)
             # shutil.move(file, path_new_dir)
@@ -124,9 +126,6 @@ async def remove_files(name_new_dir, file):
     else:
         await AsyncPath.mkdir(apath_new_dir, exist_ok = True)
         await afile.rename(target)
-
-
-
         # shutil.move(file, path_new_dir)
 
 
