@@ -29,7 +29,7 @@ def get_path():
             print('You entered wrong path! Please, try again!')
 
 # root_path_dir = get_path()
-root_path_dir = Path('E:\Загрузки')
+root_path_dir = Path('D:\\Testing\\Test\\Новая папка')
 
 
 # Списки для имен файлов
@@ -38,7 +38,7 @@ files_dict = {
 'Video': [],
 'Documents': [],
 'Music': [],
-'Zip_data': [],
+'Archives': [],
 'Unknown_files': []}
 
 
@@ -130,30 +130,53 @@ async def remove_files(name_new_dir, file):
 
 
 # Создание папки, подпаки и распаковка архива 
-async def unpack_archive_files(file):
+async def unpack_archive_files(name_new_dir, file):
 
-    # Создаем путь к директории для распаковки архивов
-    path_for_dir_archives = '{}\\{}'.format(root_path_dir, 'Archives')
+    # Создаем путь к директории для распаковки архивов ('Archives')
+    path_for_dir_archives = '{}\\{}'.format(root_path_dir, name_new_dir)
 
     # Создаем путь к поддиректории для распаковки одного архива
     path_for_dir_unpack = '{}\\{}'.format(path_for_dir_archives, file.name.removesuffix(file.suffix[:]))
+    afile = AsyncPath(file)
+    apath_for_dir_archives = AsyncPath(path_for_dir_archives)
+    apath_for_dir_unpack = AsyncPath(path_for_dir_unpack)
 
-    if os.path.exists(path_for_dir_archives):
+    is_path_exists = await AsyncPath.exists(apath_for_dir_archives)
+
+    if is_path_exists:
         try:
             # Распаковываем архив в подпапку и удаляем оригинал 
-            os.mkdir(path_for_dir_unpack)
+            await AsyncPath.mkdir(apath_for_dir_unpack)
             shutil.unpack_archive(file, path_for_dir_unpack)
-            os.remove(file)
+            await AsyncPath.unlink(afile)
 
         except (FileExistsError, shutil.Error):
             # shutil.unpack_archive(file, path_for_dir_unpack)
             message_file_exists(file.name)
+            # choice = input('Rename? yes/no: ')
+            # if choice == 'yes':
+            file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
+            files_dict[name_new_dir].append(file_name)
+            parent_dir = file.parent
+            full_path_to_file = f'{parent_dir}\{file_name}'
+            new_path_rename_file = await afile.rename(full_path_to_file)
+            target = path_for_dir_unpack + '\\' + file_name
+            await new_path_rename_file.rename(target)
+
+# TODO
+# Пофиксить распаковку с созданием uuid
+
+                # file = await AsyncPath.replace(afile, 'new_name')
+                # print(file)
+                # print(file.name)
+
     else:
-        os.mkdir(path_for_dir_archives)
-        os.mkdir(path_for_dir_unpack)
+        await AsyncPath.mkdir(apath_for_dir_archives)
+        await AsyncPath.mkdir(apath_for_dir_unpack)
         # Распаковываем архив
         shutil.unpack_archive(file, path_for_dir_unpack)
-        os.remove(file)
+
+        await AsyncPath.unlink(afile)
 
 
 # Сортировка файлов по спискам и вызов функции перемещения файлов
@@ -177,8 +200,8 @@ async def moving_files(file):
         await remove_files('Music', file)
     
     elif ext_lower in (zip_data_filter):
-            files_dict['Zip_data'].append(file.name)
-            await unpack_archive_files(file)
+            files_dict['Archives'].append(file.name)
+            await unpack_archive_files('Archives', file)
         
     else:
         files_dict['Unknown_files'].append(file.name)
