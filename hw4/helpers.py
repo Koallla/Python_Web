@@ -22,14 +22,17 @@ def get_path():
             path_dir = sys.argv[1]
         except IndexError:
             path_dir = input('Enter path to directory: ')
-        if Path(path_dir).exists():
-            path_dir = Path(path_dir)
-            return path_dir
-        else:
+
+        try:
+            if Path(path_dir).exists():
+                path_dir = Path(path_dir)
+                return path_dir
+            else:
+                print('No such directory exists! Please, try again!')
+        except OSError:
             print('You entered wrong path! Please, try again!')
 
-# root_path_dir = get_path()
-root_path_dir = Path('C:\\Users\\Михаил\\Documents')
+root_path_dir = get_path()
 
 
 # Списки для имен файлов
@@ -40,8 +43,6 @@ files_dict = {
 'Music': [],
 'Archives': [],
 'Unknown_files': []}
-
-
 
 
 # Фильтры для файлов
@@ -82,24 +83,6 @@ async def rename_files(file):
         await p.rename(full_path_new_file)
 
 
-
-# async def rename_files(file):
-#     ext = file.suffix
-#     file_name_without_ext = file.name.removesuffix(ext)
-#     file_name_with_ext = '{}_id_{}{}'.format('абвгдеёж', uuid4(), ext)
-#     p = AsyncPath(file)
-#     parent_dir = p.parent
-#     full_path_new_file = '{}\{}'.format(parent_dir, file_name_with_ext)
-#     try:
-#         await p.rename(full_path_new_file)
-#     except FileExistsError: 
-#         message_file_exists(file.name)
-#         file_name_with_ext = '{}_id_{}{}'.format(file_name_translated, uuid4(), ext)
-#         full_path_new_file = '{}\{}'.format(parent_dir, file_name_with_ext)
-#         await p.rename(full_path_new_file)
-
-
-
 # Создание папки и перемещение в нее файлов определенного типа
 async def remove_files(name_new_dir, file):
     # Путь для новой директории
@@ -114,7 +97,6 @@ async def remove_files(name_new_dir, file):
     if is_path_exists:
         try:
             await afile.rename(target)
-            # shutil.move(file, path_new_dir)
         except:
             file_name = f"{file.stem}_id_{uuid4()}{file.suffix}"
             files_dict[name_new_dir].append(file_name)
@@ -123,11 +105,9 @@ async def remove_files(name_new_dir, file):
             new_path_rename_file = await afile.rename(full_path_to_file)
             target = path_new_dir + '\\' + file_name
             await new_path_rename_file.rename(target)
-            # shutil.move(new_path_rename_file, path_new_dir)
     else:
         await AsyncPath.mkdir(apath_new_dir, exist_ok = True)
         await afile.rename(target)
-        # shutil.move(file, path_new_dir)
 
 
 # Создание папки, подпаки и распаковка архива 
@@ -152,7 +132,6 @@ async def unpack_archive_files(name_new_dir, file):
             await AsyncPath.unlink(afile)
 
         except (FileExistsError, shutil.Error):
-            # shutil.unpack_archive(file, path_for_dir_unpack)
             message_file_exists(file.name)
             choice = input('Rename dir for unpack? yes/no: ')
             if choice == 'yes':
@@ -169,7 +148,6 @@ async def unpack_archive_files(name_new_dir, file):
         await AsyncPath.mkdir(apath_for_dir_unpack, exist_ok=True)
         # Распаковываем архив
         shutil.unpack_archive(file, path_for_dir_unpack)
-
         await AsyncPath.unlink(afile)
 
 
