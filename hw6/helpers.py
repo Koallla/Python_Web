@@ -15,6 +15,10 @@ except ModuleNotFoundError:
     from .translator import normalize
 
 
+# TODO
+# will need to fix the function
+
+
 def get_path():
     while True:
         path_dir = None
@@ -28,9 +32,10 @@ def get_path():
                 path_dir = Path(path_dir)
                 return path_dir
             else:
-                print('No such directory exists! Please, try again!')
-        except OSError:
+                raise OSError
+        except (OSError, FileNotFoundError):
             print('You entered wrong path! Please, try again!')
+
 
 root_path_dir = get_path()
 
@@ -204,6 +209,6 @@ def show_result():
     create_table('Video', files_dict['Video'])
     create_table('Documents', files_dict['Documents'])
     create_table('Music', files_dict['Music'])
-    create_table('Zip_data', files_dict['Zip_data'])
+    create_table('Zip_data', files_dict['Archives'])
     create_table('Unknown_files', files_dict['Unknown_files']) 
 

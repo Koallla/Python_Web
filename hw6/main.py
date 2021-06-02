@@ -1,6 +1,5 @@
 from aiopath import AsyncPath
 import asyncio
-# from pathlib import Path
 import os
 import sys
 import shutil
@@ -40,3 +39,5 @@ async def main(path):
 
 
 asyncio.run(main(path))
+
+show_result()
