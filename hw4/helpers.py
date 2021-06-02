@@ -29,7 +29,7 @@ def get_path():
             print('You entered wrong path! Please, try again!')
 
 # root_path_dir = get_path()
-root_path_dir = Path('D:\\Testing\\Test\\Новая папка')
+root_path_dir = Path('C:\\Users\\Михаил\\Documents')
 
 
 # Списки для имен файлов
@@ -61,6 +61,7 @@ def extensions(file, container):
 # Сообщение: Файл существует!
 def message_file_exists(file_name):
     print(f'Файл {file_name} уже существует')
+
 
 
 # Перевод имени файлов и их переименование (для цикла path.iterdir())
@@ -165,7 +166,7 @@ async def unpack_archive_files(name_new_dir, file):
 
     else:
         await AsyncPath.mkdir(apath_for_dir_archives)
-        await AsyncPath.mkdir(apath_for_dir_unpack)
+        await AsyncPath.mkdir(apath_for_dir_unpack, exist_ok=True)
         # Распаковываем архив
         shutil.unpack_archive(file, path_for_dir_unpack)
 

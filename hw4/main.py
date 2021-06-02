@@ -55,14 +55,29 @@ path = root_path_dir
 
 # ==================================================================
 # async
-async def main(path):
-    start_time = time()
-
-    # futures = [rename_files(file) for file in path.iterdir()]
-    # asyncio.gather(*futures)
+async def sort_files(path):
+    futures = [rename_files(file) for file in path.iterdir() if file.is_file()]
+    await asyncio.gather(*futures)
 
     futures = [moving_files(file) for file in path.iterdir() if file.is_file()]
     await asyncio.gather(*futures)
-    print(time() - start_time)
+
+
+
+async def main(path):
+
+    await sort_files(path)
+    for item in path.iterdir():
+        if item.is_dir():
+            await sort_files(item)
+            await main(item)
+            
+            # Удаление пустых директорий
+            try:
+                item = AsyncPath(item)
+                await AsyncPath.rmdir(item)
+            except OSError:
+                continue
+
 
 asyncio.run(main(path))
