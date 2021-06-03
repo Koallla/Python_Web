@@ -14,28 +14,15 @@ try:
 except ModuleNotFoundError:
     from .translator import normalize
 
-
-# TODO
-# will need to fix the function
-
-
 def get_path():
-    while True:
-        path_dir = None
-        try:
-            path_dir = sys.argv[1]
-        except IndexError:
-            path_dir = input('Enter path to directory: ')
-
-        try:
-            if Path(path_dir).exists():
-                path_dir = Path(path_dir)
-                return path_dir
-            else:
-                raise OSError
-        except (OSError, FileNotFoundError):
-            print('You entered wrong path! Please, try again!')
-
+    path_dir = None
+    try:
+        path_dir = sys.argv[1]
+    except IndexError:
+        path_dir = input('Enter path to directory: ')
+        
+    path_dir = Path(path_dir)
+    return path_dir
 
 root_path_dir = get_path()
 
