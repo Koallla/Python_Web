@@ -14,13 +14,6 @@ except ModuleNotFoundError:
     from .helpers import *
 
 path = root_path_dir
-print(path)
-
-try:
-    Path(path).exists()
-except OSError:
-    print('You entered wrong path! Please, try again!')
-
 
 async def sort_files(path):
     futures = [rename_files(file) for file in path.iterdir() if file.is_file()]
@@ -45,6 +38,13 @@ async def main(path):
                 continue
 
 
-asyncio.run(main(path))
+try:
+    if Path(path).exists():
+        asyncio.run(main(path))
+        show_result()
+    else:    
+        raise OSError
+except OSError:
+    print('You entered wrong path! Please, try again!')
 
-show_result()
+
