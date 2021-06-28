@@ -472,7 +472,7 @@ def main():
     while True:
         action = input('Choose action: ')
 
-        if action not in commands_worlds and int(action) not in commands_int:
+        if action not in commands_worlds and action not in str(commands_int):
             print('Wrong action. Try again!')
 
         if action == 'add' or action == str(1):
