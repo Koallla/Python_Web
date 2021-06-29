@@ -62,3 +62,21 @@ Base.metadata.bind = engine
 
 # for address in session.query(Address).all():
 #     print(address.post_code)  
+
+
+def upgrade():
+    op.create_table(
+        'records',
+        sa.Column('id', sa.Integer, sa.Sequence('user_id_seq'), primary_key=True),
+        sa.Column('name', sa.String(50), nullable=False),
+        sa.Column('surname', sa.String(50), nullable=False),
+        sa.Column('adress', sa.String(200), nullable=False),
+        sa.Column('note', sa.String(500)),
+        sa.Column('tag', sa.String(200)),
+        sa.Column('email', sa.String(200), nullable=False),
+        sa.Column('phone', sa.String(300), nullable=False),
+        sa.Column('birthday', sa.Date(), nullable=False),
+    )
+
+    op.bulk_insert(records,
+    [{'name': 'Mihail', 'surname': 'Zmiiov', 'adress': 'Kyiv, Dryzby Narodov 26/1', 'email': 'z@i.ua', 'phone': '380953128882', 'birthday': '1983 07 22'}])
