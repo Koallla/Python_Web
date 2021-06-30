@@ -4,7 +4,7 @@ import re
 from prettytable import PrettyTable
 
 
-commands_worlds = ('add', 'add info', 'change', 'close', 'days', 'delete', 'delete note', 'exit', 'find', 'find note', 'find tag', 'good bye', 'hello', 'show', 'show all', 'sort birthday', 'sort name', 'sort note', 'sort surname', 'show field')
+commands_worlds = ('add record', 'add info', 'change', 'close', 'days', 'delete', 'delete note', 'exit', 'find', 'find note', 'find tag', 'good bye', 'hello', 'show', 'show all', 'sort birthday', 'sort name', 'sort note', 'sort surname', 'show field')
 
 
 commands_int = [i for i in range(len(commands_worlds) + 1)]
@@ -70,28 +70,20 @@ def find_unit(data, unit, item):
 
 def show_table(data):
     x = PrettyTable()
-    list_for_field_names = ['ID', 'Name']
+    list_for_field_names = []
     list_for_row = []
 
-    for key, value in data[0].items():
-        for item in value:
-            list_for_field_names.append(item.title())
-    
+    for key in data[0]:
+        list_for_field_names.append(key.title())
+
     x.field_names = list_for_field_names
-    for idx, record in enumerate(data):
-        for name, value in record.items():
-            list_for_row.append(idx + 1)
-            list_for_row.append(name)
-            for item in value.values():
-                if type(item) == list and len(item) >= 1:
-                    list_for_row.append(item[0]) # Добавляем только первый элемент
-                elif not item:
-                    list_for_row.append('/empty/')
-                else:
-                    list_for_row.append(item)
-            if list_for_row:
-                x.add_row(list_for_row)
-                list_for_row = []
+
+
+    for record in data:
+        for value in record.values():
+            list_for_row.append(value)
+        x.add_row(list_for_row)
+        list_for_row = []
     return x
 
 def show_record(record):

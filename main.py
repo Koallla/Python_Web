@@ -1,4 +1,5 @@
 from collections import UserDict
+from conn_to_db import create_new_record, FindDataInDb
 from datetime import datetime, timedelta
 import json
 
@@ -18,11 +19,12 @@ class Record:
         self.name = name.value
         self.surname = surname.value
         self.adress = adress.value
-        self.note = note.value
-        self.tag = tag.value
-        self.email = email.value
-        self.phone = phone.value
+        self.note = str(note.value[0])
+        self.tag = str(tag.value[0])
+        self.email = str(email.value[0])
+        self.phone = str(phone.value[0])
         self.birthday = birthday.value
+
 
     def days_to_birthday(self):
         date_with_current_year = self.birthday.replace(year=datetime.now().year)
@@ -35,7 +37,7 @@ class Record:
             print(f'{dif.days} days')
 
     def __str__(self):
-        return f'surname: {self.surname}, note: {self.note}, tag: {self.tag}, email: {self.email}, phone: {self.phone}, birthday: {self.birthday}'
+        return f'name: {self.name}, surname: {self.surname}, note: {self.note}, tag: {self.tag}, email: {self.email}, phone: {self.phone}, birthday: {self.birthday}'
 
 
 class Field:
@@ -525,7 +527,8 @@ def main():
                         break
 
             record = Record(name, surname, adress_cls, note, tag, email_cls, phone_cls, birthday_cls)
-            AddressBook.add_record(AddressBook, record)
+            create_new_record(record)
+            # AddressBook.add_record(AddressBook, record)
 
         elif action == 'add info' or action == str(2):
             name = input('Enter the name of the contact where you want to add the note:   ')
@@ -561,8 +564,10 @@ def main():
 
         elif action == 'find' or action == str(9):
             name = input('Enter the name of the contact you want to find:   ')
-            find_instance = Find(name)
-            find_instance.show_info()
+            # find_instance = Find(name)
+            # find_instance.show_info()
+            FindDataInDb.show_records_for_name(FindDataInDb, name)
+
 
         elif action == 'delete note' or action == str(7):
             name = input('Enter the name of the contact where you want to delete the note:   ')
