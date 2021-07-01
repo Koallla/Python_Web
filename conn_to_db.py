@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 
-engine = create_engine('sqlite:///records.db', echo=True)
+engine = create_engine('sqlite:///records.db')
 session = Session(bind=engine)
 Base = declarative_base()
 
@@ -56,22 +56,24 @@ def create_new_record(rec):
 class FindDataInDb():
     records_list = []
 
+    # def get_data(self):
+
     def show_records_for_name(self, name):
         full_rec = {}
-
         for rec in session.query(UserRecord).filter(UserRecord.name == name):
             full_rec['id'] = rec.id
             full_rec['name'] = rec.name
             full_rec['surname'] = rec.surname
             full_rec['adress'] = rec.adress
-            full_rec['note'] = rec.note,
-            full_rec['tag'] = rec.tag,
-            full_rec['email'] = rec.email,
-            full_rec['phone'] = rec.phone,
+            full_rec['note'] = rec.note
+            full_rec['tag'] = rec.tag
+            full_rec['email'] = rec.email
+            full_rec['phone'] = rec.phone
             full_rec['birthday'] = rec.birthday
             self.records_list.append(full_rec)
             full_rec = {}
-        
-        print(show_table(self.records_list))
-
-
+        if self.records_list:
+            print(show_table(self.records_list))
+            self.records_list = []
+        else:
+            print('Data not found!')

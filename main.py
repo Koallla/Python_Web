@@ -19,25 +19,25 @@ class Record:
         self.name = name.value
         self.surname = surname.value
         self.adress = adress.value
-        self.note = str(note.value[0])
-        self.tag = str(tag.value[0])
-        self.email = str(email.value[0])
-        self.phone = str(phone.value[0])
+        self.note = note.value[0]
+        self.tag = tag.value[0]
+        self.email = email.value[0]
+        self.phone = phone.value[0]
         self.birthday = birthday.value
 
 
-    def days_to_birthday(self):
-        date_with_current_year = self.birthday.replace(year=datetime.now().year)
-        if date_with_current_year > datetime.now():
-            dif = date_with_current_year - datetime.now()
-            print(f'{dif.days} days')
-        else:
-            year_delta = timedelta(days=365)
-            dif = (date_with_current_year + year_delta) - datetime.now()
-            print(f'{dif.days} days')
+    # def days_to_birthday(self):
+    #     date_with_current_year = self.birthday.replace(year=datetime.now().year)
+    #     if date_with_current_year > datetime.now():
+    #         dif = date_with_current_year - datetime.now()
+    #         print(f'{dif.days} days')
+    #     else:
+    #         year_delta = timedelta(days=365)
+    #         dif = (date_with_current_year + year_delta) - datetime.now()
+    #         print(f'{dif.days} days')
 
-    def __str__(self):
-        return f'name: {self.name}, surname: {self.surname}, note: {self.note}, tag: {self.tag}, email: {self.email}, phone: {self.phone}, birthday: {self.birthday}'
+    # def __str__(self):
+    #     return f'name: {self.name}, surname: {self.surname}, note: {self.note}, tag: {self.tag}, email: {self.email}, phone: {self.phone}, birthday: {self.birthday}'
 
 
 class Field:
