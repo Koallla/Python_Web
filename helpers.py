@@ -4,7 +4,9 @@ import re
 from prettytable import PrettyTable
 
 
-commands_worlds = ('add record', 'add info', 'change', 'close', 'days', 'delete', 'delete note', 'exit', 'find', 'find note', 'find tag', 'good bye', 'hello', 'show', 'show all', 'sort birthday', 'sort name', 'sort note', 'sort surname', 'show field')
+# commands_worlds = ('add record', 'add info', 'change', 'close', 'days', 'delete', 'delete note', 'exit', 'find', 'find note', 'find tag', 'good bye', 'hello', 'show', 'show all', 'sort birthday', 'sort name', 'sort note', 'sort surname', 'show field')
+
+commands_worlds = ('add record', 'find', 'change', 'delete', 'exit', 'show all')
 
 
 commands_int = [i for i in range(len(commands_worlds) + 1)]

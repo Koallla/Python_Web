@@ -58,9 +58,9 @@ class FindDataInDb():
 
     # def get_data(self):
 
-    def show_records_for_name(self, name):
+    def show_records_for_query(self, query, name):
         full_rec = {}
-        for rec in session.query(UserRecord).filter(UserRecord.name == name):
+        for rec in session.query(UserRecord).filter(getattr(UserRecord, query) == name):
             full_rec['id'] = rec.id
             full_rec['name'] = rec.name
             full_rec['surname'] = rec.surname
@@ -77,3 +77,32 @@ class FindDataInDb():
             self.records_list = []
         else:
             print('Data not found!')
+
+
+
+    def show_all_records(self):
+        full_rec = {}
+        for rec in session.query(UserRecord):
+            full_rec['id'] = rec.id
+            full_rec['name'] = rec.name
+            full_rec['surname'] = rec.surname
+            full_rec['adress'] = rec.adress
+            full_rec['note'] = rec.note
+            full_rec['tag'] = rec.tag
+            full_rec['email'] = rec.email
+            full_rec['phone'] = rec.phone
+            full_rec['birthday'] = rec.birthday
+            self.records_list.append(full_rec)
+            full_rec = {}
+        if self.records_list:
+            print(show_table(self.records_list))
+            self.records_list = []
+        else:
+            print('Data not found!')
+
+    def update_record(self, query, name, field, new_data):
+        session.query(UserRecord).filter(getattr(UserRecord, query) == name).update({getattr(UserRecord, field): new_data})
+
+
+    def delete_record(self, query, name):
+        session.query(UserRecord).filter(getattr(UserRecord, query) == name).delete()

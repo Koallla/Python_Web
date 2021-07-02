@@ -26,19 +26,6 @@ class Record:
         self.birthday = birthday.value
 
 
-    # def days_to_birthday(self):
-    #     date_with_current_year = self.birthday.replace(year=datetime.now().year)
-    #     if date_with_current_year > datetime.now():
-    #         dif = date_with_current_year - datetime.now()
-    #         print(f'{dif.days} days')
-    #     else:
-    #         year_delta = timedelta(days=365)
-    #         dif = (date_with_current_year + year_delta) - datetime.now()
-    #         print(f'{dif.days} days')
-
-    # def __str__(self):
-    #     return f'name: {self.name}, surname: {self.surname}, note: {self.note}, tag: {self.tag}, email: {self.email}, phone: {self.phone}, birthday: {self.birthday}'
-
 
 class Field:
     def __init__(self, value):
@@ -241,233 +228,6 @@ class AddressBook(UserDict):
 
 
 
-class InterfaceMeta(metaclass=ABCMeta):
-    data = AddressBook.get_data(AddressBook)
-
-    @abstractmethod
-    def show(self):
-        pass
-
-    @abstractmethod
-    def check_data_empty(self):
-        pass
-
-    @abstractmethod
-    def show_info(self):
-        pass
-
-
-class ShowInfoClass(InterfaceMeta):
-    def show(self):
-        pass
-    
-    def check_data_empty(self):
-        check_data(self.data, self.show)
-
-    def show_info(self):
-        self.check_data_empty()
-
-
-class ShowMain(ShowInfoClass):
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        print(show_table(data))
-
-
-class ShowAll(ShowInfoClass):
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        for idx, record in enumerate(data):
-            print(idx + 1, '--', record, '\n')
-
-
-class ShowField(ShowInfoClass):
-    def __init__(self, name, field):
-        self.name = name
-        self.field = field
-
-    
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        record = find_item(data, self.name)
-        for dict_data in record.values():
-            for key, value in dict_data.items():
-                if key == self.field:
-                    print(show_field(value, self.field))
-                    return
-
-
-
-
-
-
-
-
-class SortSurname(ShowInfoClass):
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        sort_data = sort_surname(data)
-        print(show_table(sort_data))
-
-
-class SortNote(ShowInfoClass):
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        sort_data = sort_len_note(data)
-        print(show_table(sort_data))
-
-
-class SortName(ShowInfoClass):
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        sort_data = sort_name(data)
-        print(show_table(sort_data))
-
-
-class SortBirthday(ShowInfoClass):
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        sort_data = sort_birthday(data)
-        print(show_table(sort_data))
-
-
-class FindTag(ShowInfoClass):
-    def __init__(self, tags):
-        self.tags = tags
-
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        record = find_unit(data, 'tag', self.tags)
-        if record:
-            print(show_table(record))
-        else:
-            print('Tag not found! Please, try again!')
-
-
-class FindNote(ShowInfoClass):
-    
-    def __init__(self, words):
-        self.words = words
-
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        record = find_unit(data, 'note', self.words)
-        if record:
-            print(show_table(record))
-        else:
-            print('Note not found! Please, try again!')
-
-
-class Find(ShowInfoClass):
-
-    def __init__(self, name):
-        self.name = name
-
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        record = find_item(data, self.name)
-        if record:
-            print(show_record(record))
-        else:
-            print('Name not found! Please, try again!')
-
-
-class DeleteNote(ShowInfoClass):
-
-    def __init__(self, name):
-        self.name = name
-    
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        record = find_item(data, self.name)
-        if record:
-            record[self.name]['note'] = []
-            print(f'Note in record {record} deleted successfully!')
-            AddressBook.save_data(AddressBook, data)
-        else:
-            print('Name not found! Please, try again!')
-
-
-class DeleteRecord(ShowInfoClass):
-    def __init__(self, name):
-        self.name = name
-
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        record = find_item(data, self.name)
-        if record:
-            data.remove(record)
-            print(f'Record {record} deleted successfully!')
-            AddressBook.save_data(AddressBook, data)
-        else:
-            print('Name not found! Please, try again!')
-
-
-class DaysToBirthday(ShowInfoClass):
-    
-    def __init__(self, name):
-        self.name = name
-
-    birthday = None
-
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        for record in data:
-            for key, value in record.items():
-                if key == self.name:
-                    birthday = datetime.strptime(value['birthday'], '%d %m %Y')
-
-        if birthday:
-            date_with_current_year = birthday.replace(year=datetime.now().year)
-            if date_with_current_year > datetime.now():
-                dif = date_with_current_year - datetime.now()
-                print(f'{dif.days} days')
-            else:
-                year_delta = timedelta(days=365)
-                dif = (date_with_current_year + year_delta) - datetime.now()
-                print(f'{dif.days} days')
-        else:
-            print('Name not found! Please, try again!')
-
-
-class ChangeValue(ShowInfoClass):
-    def __init__(self, name, field, value):
-        self.name = name
-        self.field = field
-        self.value = value
-    
-    def show(self):
-        data = AddressBook.get_data(AddressBook)
-        try:
-            signature_cls = classes[self.field.lower()]
-        except KeyError:
-            print(f'Field {self.field} not found!')
-            return
-        check_value = signature_cls(self.value)
-        value = check_value.value
-
-        if value:
-            try:
-                record = find_item(data, self.name)
-                idx = data.index(record)
-
-                if self.field == 'name':
-                    record[value] = record.pop(self.name)
-                else:
-                    for key in record[self.name]:
-                        if key == self.field.lower():
-                            record[self.name][key] = value
-                data.pop(idx)
-                data.append(record)
-                AddressBook.save_data(AddressBook, data)
-
-            except TypeError:
-                print(f'Name {self.name} not found!')
-                return
-
-            print(f'Field {self.field} was changed successfully on {value}!')
-
-
 
 def main():
 
@@ -477,7 +237,7 @@ def main():
         if action not in commands_worlds and action not in str(commands_int):
             print('Wrong action. Try again!')
 
-        if action == 'add' or action == str(1):
+        if action == 'add record' or action == str(1):
 
             name = input("Name:   ")
             name = Name(name)
@@ -528,87 +288,30 @@ def main():
 
             record = Record(name, surname, adress_cls, note, tag, email_cls, phone_cls, birthday_cls)
             create_new_record(record)
-            # AddressBook.add_record(AddressBook, record)
 
-        elif action == 'add info' or action == str(2):
-            name = input('Enter the name of the contact where you want to add the note:   ')
-            AddressBook.add_info(AddressBook, name)
-
-        elif action == 'hello' or action == str(13):
-            print('Hello! Can I help you?')
 
         elif action == 'change' or action == str(3):
-            name = input("Name:    ")
-            field = input("Field:   ")
-            new_record = input("Enter new record:   ")
-            change_value_instance = ChangeValue(name, field, new_record)
-            change_value_instance.show_info()
+            query = input('Enter query for find. Example: name, surname, adress, email, phone:   '  )            
+            name = input(f'Enter the {query} do you want to find:   ')
+            field = input(f'Enter the field do you want to update:   ')
+            new_data = input(f'Enter the data do you want to update:   ')
+            FindDataInDb.update_record(FindDataInDb, query, name, field, new_data)
 
-        elif action == 'show all' or action == str(15):
-            show_all_instance = ShowAll()
-            show_all_instance.show_info()
-            
-        elif action == 'show' or action == str(14):
-            show_main_instance = ShowMain()
-            show_main_instance.show_info()
+        elif action == 'show all' or action == str(6):
+            FindDataInDb.show_all_records(FindDataInDb)
 
-        elif action == 'days' or action == str(5):
-            name = input("Enter the name:   ")
-            days_to_birthday_instance = DaysToBirthday(name)
-            days_to_birthday_instance.show_info()
+        elif action == 'delete' or action == str(4):
+            query = input('Enter query for find record. Example: id, name, surname, adress, email, phone:   '  )               
+            name = input(f'Enter the {query} do you want to delete:   ')
+            FindDataInDb.delete_record(FindDataInDb, query, name)
 
-        elif action == 'delete' or action == str(6):
-            name = input('Enter the name of the contact you want to remove:   ')
-            delete_record_instance = DeleteRecord(name)
-            delete_record_instance.show_info()
-
-        elif action == 'find' or action == str(9):
-            name = input('Enter the name of the contact you want to find:   ')
-            # find_instance = Find(name)
-            # find_instance.show_info()
-            FindDataInDb.show_records_for_name(FindDataInDb, name)
+        elif action == 'find' or action == str(2):
+            query = input('Enter query for find. Example: name, surname, adress, email, phone:   '  )            
+            name = input(f'Enter the {query} do you want to find:   ')
+            FindDataInDb.show_records_for_query(FindDataInDb, query, name)
 
 
-        elif action == 'delete note' or action == str(7):
-            name = input('Enter the name of the contact where you want to delete the note:   ')
-            delete_note_instance = DeleteNote(name)
-            delete_note_instance.show_info()
-
-        elif action == 'find note' or action == str(10):
-            words = input("Enter any word you want to find in the note:   ")
-            find_note_instance = FindNote(words)
-            find_note_instance.show_info()
-
-        elif action == 'find tag' or action == str(11):
-            tags = input("Enter any word you want to find in the tag:   ")
-            find_tag_instance = FindTag(tags)
-            find_tag_instance.show_info()
-
-        elif action == 'sort name' or action == str(17):
-            sort_name_instance_instance = SortName()
-            sort_name_instance_instance.show_info()
-
-        elif action == 'sort surname' or action == str(19):
-            sort_surname_instance = SortSurname()
-            sort_surname_instance.show_info()
-
-        elif action == 'sort note' or action == str(18):
-            sort_note_instance = SortNote()
-            sort_note_instance.show_info()
-
-        elif action == 'sort birthday' or action == str(16):
-            sort_birthday_instance = SortBirthday()
-            sort_birthday_instance.show_info()
-    
-
-
-        elif action == 'show field' or action == str(20):
-            name = input('Enter name of the contact do you want to find:   ')
-            field = input('Enter field do you want to find:   ')
-            show_field_instance = ShowField(name, field)
-            show_field_instance.show_info()
-
-        elif action == 'good bye' or action == 'close' or action == 'exit':
+        elif action == 'good bye' or action == 'close' or action == 'exit' or action == str(5):
             print('Bye!')
             break
 
@@ -620,8 +323,3 @@ if __name__ == "__main__":
     print('To see the list of commands, please enter the command help or 0')
     main()
 
-
-
-
-# TODO
-# Сделать вывод отдельно одного поля (имя пользователя, какое поле)
