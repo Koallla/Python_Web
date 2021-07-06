@@ -1,108 +1,61 @@
 from helpers import show_table
+from bson.objectid import ObjectId
+from pymongo import MongoClient
+import datetime
 
-from sqlalchemy import Date, Column, ForeignKey, Integer, Sequence, String 
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-
-
-engine = create_engine('sqlite:///records.db')
-session = Session(bind=engine)
-Base = declarative_base()
+client = MongoClient("mongodb+srv://mika:290922@cluster0.im3uq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 
 
-class UserRecord(Base):
-    __tablename__ = 'records'
+# CONNECT TO DB
+db = client.personal_assistant
 
-    def __init__(self, name, surname, adress, note, tag, email, phone, birthday):
-        self.name = name
-        self.surname = surname
-        self.adress = adress
-        self.note = note
-        self.tag = tag
-        self.email = email
-        self.phone = phone
-        self.birthday = birthday
+# CONNECT TO COLLECTION
+records_db = db.records
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
-    surname = Column(String(50), nullable=False)
-    adress = Column(String(50), nullable=False)
-    note = Column(String(150), nullable=False)
-    tag = Column(String(80), nullable=False)
-    email = Column(String(80), nullable=False)
-    phone = Column(String(11), nullable=False)
-    birthday = Column(String(), nullable=False)
+# rec = {
+#     "name": "Filya",
+#     "surname": "Cat",
+#     "adress": "Cat house",
+#     "note": ["Toilet", "Sleep"],
+#     "tag": ["Wool", "Cute"],
+#     "birthday": datetime.datetime.utcnow()
+# }
 
+# ADD
+# test_collection.insert_one(rec).inserted_id
 
+# UPDATE
+# test_collection.update_one({'_id': ObjectId('60e3490c0b95927afe125621')},
+# { "$set": {"age": 4} })
 
-Base.metadata.create_all(engine)
-Base.metadata.bind = engine
+# DEL
+# test_collection.delete_one({'name': 'Liza'})
 
 
-def add_new_record(record):
-    session.add(record)
-    session.commit()
+result = test_collection.find()
 
 
 
-def create_new_record(rec):
-    new_record = UserRecord(rec.name, rec.surname, rec.adress, rec.note, rec.tag, rec.email, rec.phone, rec.birthday)
-    add_new_record(new_record)
-    
+for el in result:
+    print(el)
 
 
 
-class FindDataInDb():
-    records_list = []
 
-    # def get_data(self):
 
-    def show_records_for_query(self, query, name):
-        full_rec = {}
-        for rec in session.query(UserRecord).filter(getattr(UserRecord, query) == name):
-            full_rec['id'] = rec.id
-            full_rec['name'] = rec.name
-            full_rec['surname'] = rec.surname
-            full_rec['adress'] = rec.adress
-            full_rec['note'] = rec.note
-            full_rec['tag'] = rec.tag
-            full_rec['email'] = rec.email
-            full_rec['phone'] = rec.phone
-            full_rec['birthday'] = rec.birthday
-            self.records_list.append(full_rec)
-            full_rec = {}
-        if self.records_list:
-            print(show_table(self.records_list))
-            self.records_list = []
-        else:
-            print('Data not found!')
 
+class WorkWithDataInDb():
+
+    def show_records_for_query(self):
+        pass
 
 
     def show_all_records(self):
-        full_rec = {}
-        for rec in session.query(UserRecord):
-            full_rec['id'] = rec.id
-            full_rec['name'] = rec.name
-            full_rec['surname'] = rec.surname
-            full_rec['adress'] = rec.adress
-            full_rec['note'] = rec.note
-            full_rec['tag'] = rec.tag
-            full_rec['email'] = rec.email
-            full_rec['phone'] = rec.phone
-            full_rec['birthday'] = rec.birthday
-            self.records_list.append(full_rec)
-            full_rec = {}
-        if self.records_list:
-            print(show_table(self.records_list))
-            self.records_list = []
-        else:
-            print('Data not found!')
+        pass
 
     def update_record(self, query, name, field, new_data):
-        session.query(UserRecord).filter(getattr(UserRecord, query) == name).update({getattr(UserRecord, field): new_data})
+        pass
 
 
     def delete_record(self, query, name):
-        session.query(UserRecord).filter(getattr(UserRecord, query) == name).delete()
+        pass
