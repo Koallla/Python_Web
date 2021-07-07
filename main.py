@@ -194,8 +194,8 @@ class AddressBook():
             print('Data not found!')
         
 
-    def show_all_records(self, size=None):
-        result = records_db.find()
+    def show_all_records(self, limit):
+        result = records_db.find().limit(int(limit))
         for rec in result:
             print(rec)
 
@@ -267,7 +267,8 @@ def main():
             WorkWithDataInDb.update_record(WorkWithDataInDb, query, name, field, new_data)
 
         elif action == 'show all' or action == str(6):
-            AddressBook.show_all_records(AddressBook)
+            limit = input('Enter count of records to display. To view all records click "Enter": ')
+            AddressBook.show_all_records(AddressBook, limit if limit else 0)
 
         elif action == 'delete' or action == str(4):
             query = input('Enter query for find record. Example: id, name, surname, adress, email, phone:   '  )               
