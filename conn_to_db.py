@@ -12,6 +12,7 @@ db = client.personal_assistant
 # CONNECT TO COLLECTION
 records_db = db.records
 
+
 # rec = {
 #     "name": "Filya",
 #     "surname": "Cat",
@@ -32,12 +33,12 @@ records_db = db.records
 # test_collection.delete_one({'name': 'Liza'})
 
 
-result = test_collection.find()
+# result = test_collection.find()
 
 
 
-for el in result:
-    print(el)
+# for el in result:
+#     print(el)
 
 
 
@@ -46,11 +47,11 @@ for el in result:
 
 class WorkWithDataInDb():
 
-    def show_records_for_query(self):
+    def show_records_for_query(self, query):
         pass
 
 
-    def show_all_records(self):
+    def show_all_records(self, size=None):
         pass
 
     def update_record(self, query, name, field, new_data):

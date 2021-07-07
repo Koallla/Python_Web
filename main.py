@@ -1,7 +1,5 @@
-from collections import UserDict
-from conn_to_db import create_new_record, FindDataInDb
+from conn_to_db import records_db, WorkWithDataInDb
 from datetime import datetime, timedelta
-import json
 
 from abc import abstractmethod, ABCMeta
 
@@ -11,7 +9,6 @@ except ModuleNotFoundError:
     from .helpers import  *
 
 
-path = 'data.json'
 
 
 class Record:
@@ -19,10 +16,10 @@ class Record:
         self.name = name.value
         self.surname = surname.value
         self.adress = adress.value
-        self.note = note.value[0]
-        self.tag = tag.value[0]
-        self.email = email.value[0]
-        self.phone = phone.value[0]
+        self.note = note.value
+        self.tag = tag.value
+        self.email = email.value
+        self.phone = phone.value
         self.birthday = birthday.value
 
 
@@ -164,35 +161,18 @@ classes = {
 }
 
 
-class AddressBook(UserDict):
+class AddressBook():
+
+    def get_data(self):
+        return records_db.find({})
+    
 
     def add_info(self, name):
-        data = self.get_data(self)
-        if data:
-            record = find_item(data, name)
-            if record:
-                field = input("Enter field: ")
-                i = input("Enter new record: ")
-                signature_cls = classes[field]
-                check_value = signature_cls(i)
-                value = check_value.value
-                if value:
-                    if type(record[name][field]) == list:
-                        record[name][field].extend(value)
-                        print(f'Note in record {record} changed successfully!')
-                        self.save_data(self, data)
-                    elif type(record[name][field]) == str:
-                        record[name][field] += ',' + ' ' + value
-                        print(f'Note in record {record} changed successfully!')
-                        self.save_data(self, data)
-
-            else:
-                print('Name not found! Please, try again!')
-        else:
-            print('Database is empty!')
+        pass
 
     def add_record(self, record):
-        new_record = {record.name: {
+        new_record = {
+            'name': record.name,
             'surname': record.surname,
             'adress': record.adress,
             'note': record.note,
@@ -200,34 +180,29 @@ class AddressBook(UserDict):
             'email': record.email,
             'phone': record.phone,
             'birthday': record.birthday
-        }}
+        }
 
-        if self.get_data(self):
-            current_data = self.get_data(self)
-            current_data.append(new_record)
-            with open(path, 'w', encoding='utf8') as file:
-                json.dump(current_data, file, ensure_ascii=False)
+        records_db.insert_one(new_record)
+
+
+    def show_records_for_query(self, field, value):
+        doc_count = records_db.count_documents({field: value})
+        if doc_count:
+            for rec in records_db.find({field: value}):
+                print(rec)
         else:
-            # First save
-            with open(path, 'w', encoding='utf8') as file:
-                json.dump([new_record], file, ensure_ascii=False)
+            print('Data not found!')
         
-        print(f'Record {new_record} added successfully!')
 
-    def get_data(self):
-        try:
-            with open(path, 'r', encoding='utf8') as file:
-                current_data = json.load(file)
-            return current_data
-        except FileNotFoundError:
-            return None
-
-    def save_data(self, data):
-        with open(path, 'w', encoding='utf8') as file:
-            json.dump(data, file, ensure_ascii=False)
+    def show_all_records(self, size=None):
+        result = records_db.find()
+        for rec in result:
+            print(rec)
 
 
+    
 
+check_double
 
 def main():
 
@@ -265,29 +240,23 @@ def main():
                 email_cls = Email(email)
                 if email_cls.flag:
                     data = AddressBook.get_data(AddressBook)
-                    if data:
-                        if check_double(data, 'email', email):
-                            break
-                        else:
-                            print(f'Email {email} used already!')
-                    else:
+                    if check_double(data, 'email', email):
                         break
+                    else:
+                        print(f'Email {email} used already!')
 
             while True:
                 phone = input("Phone format 380......... :   ")
                 phone_cls = Phone(phone)
                 if phone_cls.flag:
                     data = AddressBook.get_data(AddressBook)
-                    if data:
-                        if check_double(data, 'phone', phone):
-                            break
-                        else:
-                            print(f'Phone {phone} used already!')
-                    else:
+                    if check_double(data, 'phone', phone):
                         break
+                    else:
+                        print(f'Phone {phone} used already!')
 
             record = Record(name, surname, adress_cls, note, tag, email_cls, phone_cls, birthday_cls)
-            create_new_record(record)
+            AddressBook.add_record(AddressBook, record)
 
 
         elif action == 'change' or action == str(3):
@@ -295,20 +264,20 @@ def main():
             name = input(f'Enter the {query} do you want to find:   ')
             field = input(f'Enter the field do you want to update:   ')
             new_data = input(f'Enter the data do you want to update:   ')
-            FindDataInDb.update_record(FindDataInDb, query, name, field, new_data)
+            WorkWithDataInDb.update_record(WorkWithDataInDb, query, name, field, new_data)
 
         elif action == 'show all' or action == str(6):
-            FindDataInDb.show_all_records(FindDataInDb)
+            AddressBook.show_all_records(AddressBook)
 
         elif action == 'delete' or action == str(4):
             query = input('Enter query for find record. Example: id, name, surname, adress, email, phone:   '  )               
             name = input(f'Enter the {query} do you want to delete:   ')
-            FindDataInDb.delete_record(FindDataInDb, query, name)
+            WorkWithDataInDb.delete_record(WorkWithDataInDb, query, name)
 
         elif action == 'find' or action == str(2):
             query = input('Enter query for find. Example: name, surname, adress, email, phone:   '  )            
             name = input(f'Enter the {query} do you want to find:   ')
-            FindDataInDb.show_records_for_query(FindDataInDb, query, name)
+            AddressBook.show_records_for_query(AddressBook, query, name)
 
 
         elif action == 'good bye' or action == 'close' or action == 'exit' or action == str(5):

@@ -199,10 +199,12 @@ def sort_birthday(data):
         return 'Database is empty!'
 
 def check_double(data, field, value):
-    for record in data:
-        for item in record.values():
-            if str(value) in item[field]:
-                return False
+    if data.count() == 0:
+        return True
+
+    for record in list(data):
+        if str(value) in record[field]:
+            return False
     return True
 
 def print_comands():
