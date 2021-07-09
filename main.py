@@ -200,9 +200,24 @@ class AddressBook():
             print(rec)
 
 
-    
+    def update_record(self, query, value, field, new_data):
+        if field in ('note','tag','email','phone'):
+            result = records_db.update_one({query: value}, {"$push": { field: new_data }})
+        else:
+            result = records_db.update_one({query: value}, {"$set": { field: new_data }})
 
-check_double
+
+        if result.matched_count:
+            print(f'Record has been updated!')
+        else:
+            print('Data not found!')
+
+
+
+
+
+
+
 
 def main():
 
@@ -264,7 +279,7 @@ def main():
             name = input(f'Enter the {query} do you want to find:   ')
             field = input(f'Enter the field do you want to update:   ')
             new_data = input(f'Enter the data do you want to update:   ')
-            WorkWithDataInDb.update_record(WorkWithDataInDb, query, name, field, new_data)
+            AddressBook.update_record(AddressBook, query, name, field, new_data)
 
         elif action == 'show all' or action == str(6):
             limit = input('Enter count of records to display. To view all records click "Enter": ')
