@@ -213,6 +213,12 @@ class AddressBook():
             print('Data not found!')
 
 
+    def delete_record(self, field, value):
+        result = records_db.find_one_and_delete({field: value}, projection={'name': True})
+        if result:
+            print(f'Record with field "{field}" and value "{value}" has been deleted!')
+        else:
+            print('Data not found!')
 
 
 
@@ -288,7 +294,7 @@ def main():
         elif action == 'delete' or action == str(4):
             query = input('Enter query for find record. Example: id, name, surname, adress, email, phone:   '  )               
             name = input(f'Enter the {query} do you want to delete:   ')
-            WorkWithDataInDb.delete_record(WorkWithDataInDb, query, name)
+            AddressBook.delete_record(AddressBook, query, name)
 
         elif action == 'find' or action == str(2):
             query = input('Enter query for find. Example: name, surname, adress, email, phone:   '  )            
