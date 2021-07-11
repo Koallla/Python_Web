@@ -1,5 +1,6 @@
-from conn_to_db import records_db, WorkWithDataInDb
+from conn_to_db import records_db
 from datetime import datetime, timedelta
+from redis_conn import save_to_redis, extract_from_redis
 
 from abc import abstractmethod, ABCMeta
 
@@ -183,15 +184,22 @@ class AddressBook():
         }
 
         records_db.insert_one(new_record)
+        save_to_redis(new_record)
 
 
     def show_records_for_query(self, field, value):
-        doc_count = records_db.count_documents({field: value})
-        if doc_count:
-            for rec in records_db.find({field: value}):
-                print(rec)
+        result = extract_from_redis(field, value)
+        if result:
+            print('Data from Redis!')
+            print(result)
         else:
-            print('Data not found!')
+            print('Data from Mongo!')
+            doc_count = records_db.count_documents({field: value})
+            if doc_count:
+                for rec in records_db.find({field: value}):
+                    print(rec)
+            else:
+                print('Data not found!')
         
 
     def show_all_records(self, limit):
@@ -209,6 +217,8 @@ class AddressBook():
 
         if result.matched_count:
             print(f'Record has been updated!')
+            for record in records_db.find({query: value}):
+                save_to_redis(record)
         else:
             print('Data not found!')
 
