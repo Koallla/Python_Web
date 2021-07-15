@@ -1,8 +1,11 @@
 from conn_to_db import records_db
-from datetime import datetime, timedelta
 from redis_conn import save_to_redis, extract_from_redis
 
 from abc import abstractmethod, ABCMeta
+from datetime import datetime, timedelta
+from ast import literal_eval
+
+
 
 try:
     from helpers import *
@@ -183,29 +186,42 @@ class AddressBook():
             'birthday': record.birthday
         }
 
-        records_db.insert_one(new_record)
-        save_to_redis(new_record)
+        r = records_db.insert_one(new_record)
+        print(f'Record saved!')
+        try:
+            save_to_redis(new_record)
+        except Exception as e:
+            print('The record was not saved to the Redis!')
 
 
     def show_records_for_query(self, field, value):
         result = extract_from_redis(field, value)
         if result:
+            new_res = {}
             print('Data from Redis!')
-            print(result)
+            for k, v in result.items():
+                if k.decode() in ('note','tag','email','phone'):
+                    new_res[k.decode()] = literal_eval(v.decode())
+                else:
+                    new_res[k.decode()] = v.decode()
+            return new_res
+
         else:
-            print('Data from Mongo!')
             doc_count = records_db.count_documents({field: value})
             if doc_count:
                 for rec in records_db.find({field: value}):
-                    print(rec)
+                    print('Data from Mongo!')
+                    return rec
             else:
                 print('Data not found!')
         
 
-    def show_all_records(self, limit):
+    def show_all_records(self, limit=0):
         result = records_db.find().limit(int(limit))
+        records = []
         for rec in result:
-            print(rec)
+            records.append(rec)
+        return records
 
 
     def update_record(self, query, value, field, new_data):
