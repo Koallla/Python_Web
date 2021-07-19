@@ -49,7 +49,7 @@ def add():
                 AddressBook.add_record(AddressBook, record)
                 return redirect('/')
             else:    
-                flash(f'Phone {phone} used already!')
+                flash(f'Phone {phone} used alre ady!')
             
         else:
             flash(f'Number {phone} is not valid! Please, enter number in format 380_________')
@@ -76,10 +76,31 @@ def find():
         record = AddressBook.show_records_for_query(AddressBook, query, data)
         return render_template('find_post.html', record=record)
 
-    
-    # record = AddressBook.show_records_for_query(AddressBook, query, data)
     return render_template('find_get.html')
 
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    if request.method == 'POST':
+        query = request.form.get('query')
+        data = request.form.get('data')
+        AddressBook.delete_record(AddressBook, query, data)
+        return redirect('/')
+        
+    return render_template('delete.html')
+
+
+@app.route('/update', methods=['GET', 'POST'])
+def update():
+    if request.method == 'POST':
+        query = request.form.get('query')
+        data = request.form.get('data')
+        field = request.form.get('field')
+        new_data = request.form.get('new_data')
+        AddressBook.update_record(AddressBook, query, data, field, new_data)
+        return redirect('/')
+        
+    return render_template('update.html')
 
 
 

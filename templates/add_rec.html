@@ -6,13 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
-  <body>
+  <body style="text-align: center">
     {% with messages = get_flashed_messages() %} {% if messages %}
     <ul>
       {% for message in messages %}
       <li>{{ message }}</li>
       {% endfor %}
     </ul>
+    <button>
+      <a
+        href="http://127.0.0.1:5000/add"
+        style="font-size: 24px; color: rgb(16, 172, 5)"
+        >Add record</a
+      >
+    </button>
     {% else %}
     <h2>Record adding form</h2>
     <form action="" method="post" novalidate>
