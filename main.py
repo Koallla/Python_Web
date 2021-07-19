@@ -2,8 +2,9 @@ from conn_to_db import records_db
 from redis_conn import save_to_redis, extract_from_redis
 
 from abc import abstractmethod, ABCMeta
-from datetime import datetime, timedelta
 from ast import literal_eval
+from datetime import datetime, timedelta
+from flask import flash
 
 
 
@@ -96,7 +97,7 @@ class Email(Field):
                 self.__value.append(item.strip())
             except WrongEmailFormat: 
                 self.flag = False
-                print(f'Email "{item}" not valid!')
+                # print(f'Email "{item}" not valid!')
 
 
 class Phone(Field):
@@ -120,7 +121,7 @@ class Phone(Field):
                     self.__value.append(item.strip())
             except WrongPhoneNumberFormat:
                 self.flag = False
-                print(f'Number {item} is not valid! Please, enter number in format 380_________')
+                # print(f'Number {item} is not valid! Please, enter number in format 380_________')
 
 
     def __str__(self):
@@ -150,7 +151,7 @@ class Birthday(Field):
             self.__value = data
         except WrongDateFormat:
             self.flag = False
-            print('Please, input birthday date in format "%d %m %Y" ')
+            # print('Please, input birthday date in format "%d %m %Y" ')
 
 
 classes = {
@@ -335,6 +336,48 @@ def main():
         elif action == 'help' or action == str(0):
             print_comands()
 
+
+
+
+def add_rec_to_db(*args, **kwargs):
+            name = Name(name)
+
+            surname = Surname(surname)
+
+            adress_cls = Adress(adress)
+
+            note = Note(note)
+
+            tag = Tag(tag)
+
+            while True:
+                birthday = input("Birthday:  ")
+                birthday_cls = Birthday(birthday)
+                if birthday_cls.flag:
+                    break
+                
+            while True:
+                email = input("Email:   ")  
+                email_cls = Email(email)
+                if email_cls.flag:
+                    data = AddressBook.get_data(AddressBook)
+                    if check_double(data, 'email', email):
+                        break
+                    else:
+                        print(f'Email {email} used already!')
+
+            while True:
+                phone = input("Phone format 380......... :   ")
+                phone_cls = Phone(phone)
+                if phone_cls.flag:
+                    data = AddressBook.get_data(AddressBook)
+                    if check_double(data, 'phone', phone):
+                        break
+                    else:
+                        print(f'Phone {phone} used already!')
+
+            record = Record(name, surname, adress_cls, note, tag, email_cls, phone_cls, birthday_cls)
+            AddressBook.add_record(AddressBook, record)
 
 if __name__ == "__main__":
     print('To see the list of commands, please enter the command help or 0')
