@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <h1>Олимпийские игры 2021</h1>
+      <table style="display: initial;" >
+        <caption>
+          <h3>Результаты волейбольных матчей</h3>
+        </caption>
+        <tr>
+          <th>Команды</th>
+          <th>Статус матча</th>
+          <th>Результат</th>
+        </tr>
+      {% for game in data %}
+        <tr>
+          <td>
+            {{ game['comand1'] }} <br />
+            {{ game['comand2'] }}
+          </td>
+          <td>{{ game['status'] }}</td>
+          <td>
+            {% for res in game['result1'] %}
+            {{ res }} 
+            {% endfor %}
+            <br />
+            {% for res in game['result2'] %}
+            {{ res }} 
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+    </div>
+  </body>
+</html>
