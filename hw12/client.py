@@ -7,6 +7,8 @@ url = 'https://www.sport-express.ru/live/'
 
 url1 = 'https://www.championat.com/stat/'
 
+url2 = 'https://www.flashscore.com.ua/volleyball'
+
 urls = ['https://www.sport-express.ru/live/', 'https://www.flashscore.com.ua/volleyball', 'https://www.livesport.com/ru/volleyball']
 
 
@@ -113,8 +115,45 @@ async def main1():
         # with open('test.txt', 'w', encoding='utf-8') as file:
         #     file.write(str(soup))
         matches = soup.find_all('a', href=re.compile("_volleyballog/tournament/.+/match"))
+        lists_res = []
+
         for match in matches:
-            print(match.text)
+            lists_res.append(match.text.split(' '))
+
+        print(lists_res)
+
+        for list_res in lists_res:
+            dict_ = {}
+            for item in list_res:
+                if item == '–':
+                    dict_['comand1'] = list_res[0]
+                    if list_res[1] != item:
+                        dict_['comand1'] += ' ' + list_res[1]
+
+                    dict_['comand2'] = list_res[list_res.index(item) + 1]
+                    try:
+                        if int(list_res[list_res.index(item) + 2]) or int(list_res[list_res.index(item) + 2]) == 0:
+                            dict_['result1'] = list_res[list_res.index(item) + 2]
+                            dict_['result2'] = list_res[list_res.index(item) + 4]
+                    except ValueError:
+                        try:
+                            dict_['comand2'] += ' ' + list_res[list_res.index(item) + 2]
+                        except KeyError:
+                            dict_['comand2'] = list_res[list_res.index(item) + 2]
+                    except IndexError:
+                        continue
+                
+                
+            print('dict_', dict_)
+                
+
+
+
+                # dict_['comand1'] = com[i]
+                # dict_['comand2'] = com[idx]
+                # idx += 2
+                # data.append(dict_)
+                # dict_ = {}
         
         
 

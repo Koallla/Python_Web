@@ -4,6 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+lxml = "*"
+beautifulsoup4 = "*"
+aiohttp = "*"
 
 [dev-packages]
 
