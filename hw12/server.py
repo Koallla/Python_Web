@@ -13,6 +13,7 @@ routes = web.RouteTableDef()
 @routes.get('/')
 @aiohttp_jinja2.template("index.html")
 async def handle(request):
+    
     data = await main()
     return {'data': data}
 

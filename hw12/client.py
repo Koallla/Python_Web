@@ -3,18 +3,14 @@ import asyncio
 from bs4 import BeautifulSoup
 import re
 
-url = 'https://www.sport-express.ru/live/'
 
-url1 = 'https://www.championat.com/stat/'
 
-url2 = 'https://www.flashscore.com.ua/volleyball'
-
-urls = ['https://www.sport-express.ru/live/', 'https://www.flashscore.com.ua/volleyball', 'https://www.livesport.com/ru/volleyball']
+urls = ['https://www.sport-express.ru/live/', 'https://www.championat.com/stat/']
 
 
 
 
-async def main():
+async def parser_voleyball_one(url):
     com = []
     match_statuses = []
     res_home = []
@@ -93,34 +89,21 @@ async def main():
 
     return data
 
-# if __name__ == "__main__":
-#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-#     asyncio.run(main())
 
 
-async def main1():
-    com = []
-    match_statuses = []
-    res_home = []
-    results_home = []
-    res_guest = []
-    results_guest = []
+async def parser_voleyball_second(url):
     data = []
-    async with aiohttp.ClientSession().get(url1) as response:
+    async with aiohttp.ClientSession().get(url) as response:
 
         html = await response.text()
 
         soup = BeautifulSoup(html, 'html.parser')
 
-        # with open('test.txt', 'w', encoding='utf-8') as file:
-        #     file.write(str(soup))
         matches = soup.find_all('a', href=re.compile("_volleyballog/tournament/.+/match"))
         lists_res = []
 
         for match in matches:
             lists_res.append(match.text.split(' '))
-
-        print(lists_res)
 
         for list_res in lists_res:
             dict_ = {}
@@ -144,20 +127,20 @@ async def main1():
                         continue
                 
                 
-            print('dict_', dict_)
-                
+            data.append(dict_)
+            dict_ = {}
+
+    return data
 
 
+async def main():
+    parser_one = await parser_voleyball_one(urls[0])
+    parser_second = await parser_voleyball_second(urls[1])
+    for data_match in parser_second:
+        for key, data in data_match.items():
+            if key == 'comand1':
+                if not any(d['comand1'] == data for d in parser_one):
+                    parser_one.append(data_match)
 
-                # dict_['comand1'] = com[i]
-                # dict_['comand2'] = com[idx]
-                # idx += 2
-                # data.append(dict_)
-                # dict_ = {}
-        
-        
+    return parser_one
 
-
-
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-asyncio.run(main1())
