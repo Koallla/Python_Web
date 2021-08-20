@@ -1,0 +1,26 @@
+<h2>This is report page</h2>
+
+<a href="/assist">
+  <button>Home</button>
+</a>
+
+<form method="POST" class="post-form">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit" class="save btn btn-default">Filter</button>
+</form>
+
+{% if records %}
+<div>Profit: {{profit}} {{currency}}</div>
+<div>Expence: {{expence}} {{currency}}</div>
+<ul style="width: max-content">
+  {% for record in records %}
+  <li>
+    <a href="/assist/{{ record.id }}/">
+      <div>{{ record.action_date}}</div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No records are available.</p>
+{% endif %}

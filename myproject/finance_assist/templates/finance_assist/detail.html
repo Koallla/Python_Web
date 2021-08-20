@@ -1,0 +1,30 @@
+<div style="text-align: center">
+  <h2>Detail page</h2>
+
+  {% if record %}
+  <div style="display: flex; justify-content: center; align-items: baseline">
+    <h3>Record name:</h3>
+    <span> -- {{ record.action_name}}</span>
+  </div>
+  <div style="display: flex; justify-content: center; align-items: baseline">
+    <h3>Category name:</h3>
+    <span> -- {{ record.category_name}}</span>
+  </div>
+  <div style="display: flex; justify-content: center; align-items: baseline">
+    <h3>Record date:</h3>
+    <span> -- {{ record.action_date}}</span>
+  </div>
+  <div style="display: flex; justify-content: center; align-items: baseline">
+    <h3>Record count:</h3>
+    <span> -- {{ record.action_count}}</span>
+  </div>
+  {% else %}
+  <p>No records are available.</p>
+  {% endif %}
+  <br />
+  <br />
+
+  <a href="/assist">
+    <button>Home</button>
+  </a>
+</div>
