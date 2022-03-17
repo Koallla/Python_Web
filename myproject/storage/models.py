@@ -18,6 +18,6 @@ class Product(models.Model):
     remains = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'{self.name}, {self.category}, {self.price}, {self.status}, {self.remains}'
+        return f'ID: {self.id} - {self.category} / {self.name} / {self.price} / {self.status} / {self.remains}'
 
 

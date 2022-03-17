@@ -1,9 +1,10 @@
-from django.urls import path
+from storage.views import MyView
+from django.urls import path, include
 
 from . import views
 
+
+
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('<int:question_id>/vote/', views.vote, name='vote'),
-    path('products/', views.products_view, name='products'),
+    path('products/', MyView.as_view())
 ]

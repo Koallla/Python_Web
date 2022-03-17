@@ -1,9 +1,31 @@
-{% if products %}
-<ul>
-  {% for product in products %}
-  <li>{{ product }}</li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>No category are available.</p>
-{% endif %}
+<div class="container" style="display: flex; justify-content: center">
+  <div class="wrapper">
+    {% if page_obj %}
+    <ul>
+      {% for product in page_obj %}
+      <li>{{ product }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No category are available.</p>
+    {% endif %}
+
+    <div class="pagination" style="display: flex; justify-content: center">
+      <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+          {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+</div>
