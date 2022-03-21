@@ -3,13 +3,20 @@
     {% if page_obj %}
     <ul>
       {% for product in page_obj %}
-      <li>{{ product }}</li>
+      <li style="list-style-type: none">
+        <div class="items" style="display: flex; justify-content: left">
+          <div>ID:{{ product.id }} | Category: {{ product.category}} |</div>
+          <div>&nbsp Name: {{ product.name}} | Price: {{ product.price}} |</div>
+          <div>
+            &nbsp Status: {{ product.status}} | Remains: {{ product.remains}} |
+          </div>
+        </div>
+      </li>
       {% endfor %}
     </ul>
     {% else %}
-    <p>No category are available.</p>
-    {% endif %}
-
+    <p>No products are available.</p>
+    {% endif %} <br />
     <div class="pagination" style="display: flex; justify-content: center">
       <span class="step-links">
         {% if page_obj.has_previous %}

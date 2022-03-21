@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         category_count, product_count = kwargs['category_count'], kwargs['product_count']
         category_list = [Category(name=get_random_string(10)) for i in range(category_count)]
-        Category.objects.bulk_create(category_list)
+        Category.objects.bulk_create(category_list, batch_size=10000)
         self.stdout.write(f'Created {category_count} category')
 
         products_list = []
